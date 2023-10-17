@@ -967,6 +967,14 @@ Aktifkan (enable) konfigurasi situs web dengan nama domain "abimanyu.E19.com" ya
 a2ensite abimanyu.E19.com.conf
 service apache2 restart
 ```
+
+### Testing
+
+Pada Client : `lynx abimanyu.E19.com` `lynx www.abimanyu.E19.com`
+
+![image](https://github.com/AfiqHaidar/Jarkom-Modul-2-E19-2023/assets/70834506/546b51c7-7ef7-4364-a5aa-51527377a83a)
+
+
 ## Soal 12
 **Setelah itu ubahlah agar url `www.abimanyu.yyy.com/index.php/home` menjadi `www.abimanyu.yyy.com/home`.**
 
@@ -997,6 +1005,13 @@ echo '
  RewriteRule ^([^\.]+)$ $1.php [NC,L]
  ' > /var/www/abimanyu.E19.com/.htaccess
 ```
+
+### Testing
+
+Pada Client : `lynx abimanyu.E19.com/home` `lynx www.abimanyu.E19.com/home`
+
+![image](https://github.com/AfiqHaidar/Jarkom-Modul-2-E19-2023/assets/70834506/6decd19c-f082-4b9d-b20e-8f9beae2b216)
+
 
 ## Soal 13
 **Selain itu, pada subdomain `www.parikesit.abimanyu.yyy.com`, DocumentRoot disimpan pada `/var/www/parikesit.abimanyu.yyy`**
@@ -1029,6 +1044,14 @@ Aktifkan (enable) konfigurasi situs web dengan nama domain "parikesit.abimanyu.E
 a2ensite parikesit.abimanyu.E19.com.conf
 service apache2 restart
 ```
+
+### Testing
+
+Pada Client : `lynx parikesit.abimanyu.E19.com` `lynx www.parikesit.abimanyu.E19.com`
+
+![image](https://github.com/AfiqHaidar/Jarkom-Modul-2-E19-2023/assets/70834506/c30257df-9962-4792-a03e-91459bc6ff68)
+
+
 ## Soal 14
 **Pada subdomain tersebut folder /public hanya dapat melakukan directory listing sedangkan pada folder /secret tidak dapat diakses (403 Forbidden).**
 
@@ -1063,6 +1086,14 @@ echo "<VirtualHost *:80>
 
 </VirtualHost>" > /etc/apache2/sites-available/parikesit.abimanyu.E19.com.conf
 ```
+### /public
+
+![image](https://github.com/AfiqHaidar/Jarkom-Modul-2-E19-2023/assets/70834506/fa3694e3-04fc-4b68-8a03-ad9f99588cca)
+
+### /secret
+
+![image](https://github.com/AfiqHaidar/Jarkom-Modul-2-E19-2023/assets/70834506/6dff664b-e522-405c-963b-3f757a91ffe6)
+
 ## Soal 15
 **Buatlah kustomisasi halaman error pada folder /error untuk mengganti error kode pada Apache. Error kode yang perlu diganti adalah 404 Not Found dan 403 Forbidden.**
 
@@ -1097,6 +1128,15 @@ echo "<VirtualHost *:80>
 
 </VirtualHost>" > /etc/apache2/sites-available/parikesit.abimanyu.E19.com.conf
 ```
+
+### 403 Forbidden
+
+![image](https://github.com/AfiqHaidar/Jarkom-Modul-2-E19-2023/assets/70834506/bac64cdd-bd07-4715-98c6-f7542a24937a)
+
+
+### 404 Not Found
+
+![image](https://github.com/AfiqHaidar/Jarkom-Modul-2-E19-2023/assets/70834506/508d5052-603c-47ef-b368-bda317ba602c)
 
 
 ## Soal 16
@@ -1139,6 +1179,14 @@ echo "<VirtualHost *:80>
 
 </VirtualHost>" > /etc/apache2/sites-available/parikesit.abimanyu.E19.com.conf
 ```
+
+### Testing
+
+Pada Client : `lynx parikesit.abimanyu.E19.com/js` `lynx www.parikesit.abimanyu.E19.com/js`
+
+![image](https://github.com/AfiqHaidar/Jarkom-Modul-2-E19-2023/assets/70834506/6cac665a-eb41-44f0-acac-ff0f4e9cb3ef)
+
+
 ## Soal 17
 **Agar aman, buatlah konfigurasi agar `www.rjp.baratayuda.abimanyu.yyy.com` hanya dapat diakses melalui port `14000` dan `14400`.**
 
@@ -1184,6 +1232,13 @@ Aktifkan (enable) konfigurasi situs web dengan nama domain "rjp.baratayuda.abima
 a2ensite rjp.baratayuda.abimanyu.E19.com.conf
 service apache2 restart
 ```
+### Testing
+
+Pada Client : `lynx rjp.baratayuda.abimanyu.E19.com:14000` `lynx www.rjp.baratayuda.abimanyu.E19.com:14000` `lynx rjp.baratayuda.abimanyu.E19.com:14400` `lynx www.rjp.baratayuda.abimanyu.E19.com:14400`
+
+![image](https://github.com/AfiqHaidar/Jarkom-Modul-2-E19-2023/assets/70834506/3178c90d-1343-437a-bc65-4bc7d49d5f6b)
+
+
 ## Soal 18
 **Untuk mengaksesnya buatlah autentikasi username berupa `Wayang` dan password `baratayudayyy` dengan yyy merupakan kode kelompok. Letakkan DocumentRoot pada `/var/www/rjp.baratayuda.abimanyu.yyy`.**
 
@@ -1213,6 +1268,14 @@ Menambahkan entri autentikasi untuk pengguna "Wayang" dengan password "baratayud
 ```bash
 htpasswd -c -b /etc/apache2/.htpasswd Wayang baratayudaE19
 ```
+
+### Username & Password
+
+![image](https://github.com/AfiqHaidar/Jarkom-Modul-2-E19-2023/assets/70834506/8e5d4ff8-43a0-464f-94fe-dc86b74d2d0f)
+
+![image](https://github.com/AfiqHaidar/Jarkom-Modul-2-E19-2023/assets/70834506/57a60f32-b791-4be4-8a15-275e2154e440)
+
+
 ## Soal 19
 **Buatlah agar setiap kali mengakses IP dari Abimanyu akan secara otomatis dialihkan ke `www.abimanyu.yyy.com` (alias)**
 
@@ -1240,6 +1303,14 @@ echo -e '<VirtualHost *:80>
 </VirtualHost>
 ' > /etc/apache2/sites-available/abimanyu.E19.com.conf
 ```
+
+### Testing
+
+Pada Client : `lynx 10.46.3.3` 
+
+![image](https://github.com/AfiqHaidar/Jarkom-Modul-2-E19-2023/assets/70834506/29055ed2-16e5-4826-9762-03b1b214a315)
+
+
 ## Soal 20
 **Karena website `www.parikesit.abimanyu.yyy.com` semakin banyak pengunjung dan banyak gambar gambar random, maka ubahlah request gambar yang memiliki substring “abimanyu” akan diarahkan menuju abimanyu.png.**
 
@@ -1253,6 +1324,18 @@ RewriteCond %{REQUEST_URI} !/public/images/abimanyu.png
 RewriteRule abimanyu http://parikesit.abimanyu.E19.com/public/images/abimanyu.png$1 [L,R=301]
 ' > /var/www/parikesit.abimanyu.E19/public/images/.htaccess
 ```
+
+### Testing
+
+Pada Client : `lynx parikesit.abimanyu.E19.com/public/images/not-abimanyu.png` 
+
+![image](https://github.com/AfiqHaidar/Jarkom-Modul-2-E19-2023/assets/70834506/be1730a4-57e3-4837-9226-2d2940539166)
+
+
+Pada Client : `lynx parikesit.abimanyu.E19.com/public/images/notabimanyujustmuseum.107-033` 
+
+![image](https://github.com/AfiqHaidar/Jarkom-Modul-2-E19-2023/assets/70834506/266314e2-bdd0-4a9e-bc94-e77537c182d7)
+
 
 ## Note
 - Pastikan setiap konfigurasi apache2 yang diubah, dilakukan `service apache2 restart` agar konfigurasi terupdate
