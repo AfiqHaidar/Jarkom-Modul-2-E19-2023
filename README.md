@@ -166,6 +166,8 @@ ping www.arjuna.E19.com -c 3
 ```
 ### Screenshot hasil:
 
+![image](https://github.com/AfiqHaidar/Jarkom-Modul-2-E19-2023/assets/100523471/52241491-c06e-454c-ac94-0a05499552e1)
+
 ## Soal 3
 **Dengan cara yang sama seperti soal nomor 2, buatlah website utama dengan akses ke `abimanyu.yyy.com` dan alias `www.abimanyu.yyy.com`.**
 
@@ -224,6 +226,8 @@ ping www.abimanyu.E19.com -c 3
 ```
 ### Screenshot hasil:
 
+![image](https://github.com/AfiqHaidar/Jarkom-Modul-2-E19-2023/assets/100523471/485265ad-2d93-43e8-872d-e111cd18ae87)
+
 ## Soal 4
 **Kemudian, karena terdapat beberapa web yang harus di-deploy, buatlah subdomain `parikesit.abimanyu.yyy.com` yang diatur DNS-nya di Yudhistira dan mengarah ke Abimanyu.**
 
@@ -266,6 +270,8 @@ host -t CNAME www.parikesit.abimanyu.E19.com
 ping www.parikesit.abimanyu.E19.com -c 3
 ```
 ### Screenshot hasil:
+
+![image](https://github.com/AfiqHaidar/Jarkom-Modul-2-E19-2023/assets/100523471/fd6a112c-2920-4256-bb2a-f697767f0892)
 
 ## Soal 5
 **Buat juga reverse domain untuk domain utama. (Abimanyu saja yang direverse)**
@@ -326,6 +332,7 @@ host -t PTR 10.46.3.3
 ```
 ### Screenshot hasil:
 
+![image](https://github.com/AfiqHaidar/Jarkom-Modul-2-E19-2023/assets/100523471/eea3c640-6777-45b8-9149-dc6e4505051f)
 
 ## Soal 6
 **Agar dapat tetap dihubungi ketika DNS Server Yudhistira bermasalah, buat juga Werkudara sebagai DNS Slave untuk domain utama.**
@@ -438,6 +445,8 @@ ping www.arjuna.E19.com -c 3
 Jika berhasil, maka DNS Slave sudah benar.
 
 ### Screenshot hasil:
+
+![image](https://github.com/AfiqHaidar/Jarkom-Modul-2-E19-2023/assets/100523471/450466dd-5a1d-4d8b-bbe3-1d80444159a3)
 
 ## Soal 7
 **Seperti yang kita tahu karena banyak sekali informasi yang harus diterima, buatlah subdomain khusus untuk perang yaitu `baratayuda.abimanyu.yyy.com` dengan alias `www.baratayuda.abimanyu.yyy.com` yang didelegasikan dari Yudhistira ke Werkudara dengan IP menuju ke Abimanyu dalam folder Baratayuda.**
@@ -580,6 +589,8 @@ ping www.baratayuda.abimanyu.E19.com -c 5
 ```
 ### Screenshot hasil:
 
+![image](https://github.com/AfiqHaidar/Jarkom-Modul-2-E19-2023/assets/100523471/59c8f233-0c3f-4688-9916-36acc4983f84)
+
 ## Soal 8
 **Untuk informasi yang lebih spesifik mengenai Ranjapan Baratayuda, buatlah subdomain melalui Werkudara dengan akses `rjp.baratayuda.abimanyu.yyy.com` dengan alias `www.rjp.baratayuda.abimanyu.yyy.com` yang mengarah ke Abimanyu.**
 
@@ -622,6 +633,9 @@ ping www.rjp.baratayuda.abimanyu.E19.com -c 3
 ```
 
 ### Screenshot hasil:
+
+![image](https://github.com/AfiqHaidar/Jarkom-Modul-2-E19-2023/assets/100523471/d8170987-eab2-4169-824f-e9633f63233e)
+![image](https://github.com/AfiqHaidar/Jarkom-Modul-2-E19-2023/assets/100523471/b175add2-1234-461c-a5aa-a5f9a5672f61)
 
 ## Soal 9
 **Arjuna merupakan suatu Load Balancer Nginx dengan tiga worker (yang juga menggunakan nginx sebagai webserver) yaitu Prabakusuma, Abimanyu, dan Wisanggeni. Lakukan deployment pada masing-masing worker.**
@@ -767,6 +781,10 @@ lynx http://arjuna.E19.com
 
 ### Screenshot hasil:
 
+![image](https://github.com/AfiqHaidar/Jarkom-Modul-2-E19-2023/assets/100523471/1440827d-3a19-45bf-95ae-b811aabbf52f)
+![image](https://github.com/AfiqHaidar/Jarkom-Modul-2-E19-2023/assets/100523471/e19ff295-a68e-4854-8ca2-a9d3f0a5e557)
+![image](https://github.com/AfiqHaidar/Jarkom-Modul-2-E19-2023/assets/100523471/20f86a24-bcd8-4646-86a8-a290074020ff)
+
 ## Soal 10
 **Kemudian gunakan algoritma `Round Robin` untuk Load Balancer pada `Arjuna`. Gunakan server_name pada soal nomor 1. Untuk melakukan pengecekan akses alamat web tersebut kemudian pastikan worker yang digunakan untuk menangani permintaan akan berganti ganti secara acak. Untuk webserver di masing-masing worker wajib berjalan di port 8001-8003. Contoh**
 **- Prabakusuma:8001**
@@ -890,6 +908,10 @@ lynx http://arjuna.E19.com
 ```
 
 ### Screenshot hasil:
+
+![image](https://github.com/AfiqHaidar/Jarkom-Modul-2-E19-2023/assets/100523471/1440827d-3a19-45bf-95ae-b811aabbf52f)
+![image](https://github.com/AfiqHaidar/Jarkom-Modul-2-E19-2023/assets/100523471/e19ff295-a68e-4854-8ca2-a9d3f0a5e557)
+![image](https://github.com/AfiqHaidar/Jarkom-Modul-2-E19-2023/assets/100523471/20f86a24-bcd8-4646-86a8-a290074020ff)
 
 ## Soal 11
 **Selain menggunakan Nginx, lakukan konfigurasi Apache Web Server pada worker Abimanyu dengan web server `www.abimanyu.yyy.com`. Pertama dibutuhkan web server dengan DocumentRoot pada /var/www/abimanyu.yyy**
