@@ -442,15 +442,455 @@ Jika berhasil, maka DNS Slave sudah benar.
 ## Soal 7
 **Seperti yang kita tahu karena banyak sekali informasi yang harus diterima, buatlah subdomain khusus untuk perang yaitu `baratayuda.abimanyu.yyy.com` dengan alias `www.baratayuda.abimanyu.yyy.com` yang didelegasikan dari Yudhistira ke Werkudara dengan IP menuju ke Abimanyu dalam folder Baratayuda.**
 
+Melakukan `Configurasi` pada DNS Master Yudhistira dan DNS Slave Werkudara untuk membuat subdomain baratayuda.abimanyu.E19.com
+
+**Yudhistira**
+```sh
+echo '
+zone "abimanyu.E19.com" {
+    type master;
+    notify yes; 
+    also-notify { 10.46.2.3; };         // IP Werkudara
+    allow-transfer { 10.46.2.3; };      // IP Werkudara
+    file "/etc/bind/abimanyu/abimanyu.E19.com"; // file master di yudhistira 
+}; 
+'> /etc/bind/named.conf.local
+
+#config 
+echo '
+;
+; BIND data file for local loopback interface
+;
+$TTL    604800
+@       IN      SOA     abimanyu.E19.com. root.abimanyu.E19.com. (
+            2022102401          ; Serial
+                604800          ; Refresh
+                 86400          ; Retry
+               2419200          ; Expire
+                604800 )        ; Negative Cache TTL
+;
+@       IN      NS      abimanyu.E19.com.   // domain name
+@       IN      A       10.46.3.3           ; IP abimanyu 
+www     IN      CNAME   abimanyu.E19.com.   ; alias // membuat alias name www.abimanyu.E19.com
+parikesit IN    A       10.46.3.3           ; IP Abimanyu   // membuat subdomain parikesit.abimanyu.E19.com
+www.parikesit     IN      CNAME   parikesit.abimanyu.E19.com.   ; alias // membuat alias name www.parikesit.abimanyu.E19.com
+ns1     IN      A       10.46.2.3           ; IP Werkudara  // membuat subdomain ns1.abimanyu.E19.com
+baratayuda  IN  NS      ns1
+@       IN      AAAA    ::1
+' > /etc/bind/abimanyu/abimanyu.E19.com
+
+# options
+echo 'options {
+    directory "/var/cache/bind";    // default working directory - /var/cache/bind
+
+    allow-query { any; };
+
+    auth-nxdomain no;   # conform to RFC1035
+    listen-on-v6 {any; };
+};' > /etc/bind/named.conf.options
+
+
+
+#restart bind
+service bind9 restart
+```
+
+- Pertama, Mengubah konfigurasi `abimanyu.E19.com` dengan menambahkan ns1 menuju IP Werkudara dan diberi nama baratayuda.
+- Kedua, Mengubah konfigurasi `named.conf.options` dengan melakukan comment `dnssec-validation auto;` dan menambahkan `allow-query{any;};`.
+- Terakhir, Mengubah konfigurasi `named.conf.local` dengan menghilangkan notify dan also-notify pada zone abimanyu.
+- Restart bind9.
+
+**Werkudara**
+```sh
+#buat zone
+echo '
+zone "arjuna.E19.com" {
+    type slave; //  master jika di yudhistira
+    masters { 10.46.2.2; }; #IP yudhistira  
+    file "/var/lib/bind/arjuna.E19.com";
+};
+
+zone "abimanyu.E19.com" {
+    type slave;
+    masters { 10.46.2.2; }; #IP yudhistira
+    file "/var/lib/bind/abimanyu.E19.com";
+};
+
+zone "baratayuda.abimanyu.E19.com" {
+    type master;    // master jika di yudhistira 
+    file "/etc/bind/baratayuda/baratayuda.abimanyu.E19.com";
+};
+
+zone "3.46.10.in-addr.arpa" {
+    type slave; // master jika di yudhistira
+    masters { 10.46.2.2; }; #IP yudhistira
+    file "/etc/bind/3.46.10.in-addr.arpa";
+};
+' > /etc/bind/named.conf.local
+
+#buat folder 
+mkdir /etc/bind/baratayuda
+
+#copy db.local
+cp /etc/bind/db.local /etc/bind/baratayuda/baratayuda.abimanyu.E19.com
+
+#config baratayuda.abimanyu.E19.com
+echo '
+;
+; BIND data file for local loopback interface
+;
+$TTL    604800
+@       IN      SOA     baratayuda.abimanyu.E19.com. root.baratayuda.abimanyu.E19.com. (
+            2022102401          ; Serial
+                604800          ; Refresh
+                 86400          ; Retry
+               2419200          ; Expire
+                604800 )        ; Negative Cache TTL
+;
+@       IN      NS      baratayuda.abimanyu.E19.com.
+@       IN      A       10.46.3.3           ; IP Abimanyu   //  
+www     IN      CNAME   baratayuda.abimanyu.E19.com.   ; alias
+@       IN              AAAA                ::1
+' > /etc/bind/baratayuda/baratayuda.abimanyu.E19.com
+
+#options
+echo 'options {
+    directory "/var/cache/bind";    // default working directory - /var/cache/bind
+
+    allow-query { any; };
+
+    auth-nxdomain no;   # conform to RFC1035
+    listen-on-v6 {any; };
+};' > /etc/bind/named.conf.options
+
+#restart bind
+service bind9 restart
+```
+
+- Pertama, Mengubah konfigurasi `baratayuda.abimanyu.E19.com` dengan menambahkan rjp menuju IP Abimanyu dan diberi nama baratayuda.
+- Kedua, Mengubah konfigurasi `named.conf.options` dengan melakukan comment `dnssec-validation auto;` dan menambahkan `allow-query{any;};`.
+- Ketiga, Mengubah konfigurasi `named.conf.local` dengan menghilangkan notify dan also-notify pada zone baratayuda.
+
+**Sadewa & Nakula**
+
+Cek apakah subdomain sudah berjalan atau tidak menggunakan ping di Client Sadewa/Nakula
+```
+ping baratayuda.abimanyu.E19.com -c 5
+ping www.baratayuda.abimanyu.E19.com -c 5
+```
+### Screenshot hasil:
+
 ## Soal 8
 **Untuk informasi yang lebih spesifik mengenai Ranjapan Baratayuda, buatlah subdomain melalui Werkudara dengan akses `rjp.baratayuda.abimanyu.yyy.com` dengan alias `www.rjp.baratayuda.abimanyu.yyy.com` yang mengarah ke Abimanyu.**
+
+Melakukan `Configurasi` pada DNS Slave Werkudara untuk membuat subdomain rjp.baratayuda.abimanyu.E19.com
+
+**Werkudara**
+```sh
+echo '
+;
+; BIND data file for local loopback interface
+;
+$TTL    604800
+@       IN      SOA     baratayuda.abimanyu.E19.com. root.baratayuda.abimanyu.E19.com. (
+            2022102401          ; Serial
+                604800          ; Refresh
+                 86400          ; Retry
+               2419200          ; Expire
+                604800 )        ; Negative Cache TTL
+;
+@       IN      NS      baratayuda.abimanyu.E19.com.
+@       IN      A       10.46.3.3           ; IP Abimanyu   //  
+www     IN      CNAME   baratayuda.abimanyu.E19.com.   ; alias
+rjp     IN      A       10.46.3.3           ; IP Abimanyu
+www.rjp     IN      CNAME       rjp.baratayuda.abimanyu.E19.com.    ; IP Werkudara supaya bisa diakses dari client
+@       IN              AAAA                ::1
+' > /etc/bind/baratayuda/baratayuda.abimanyu.E19.com
+
+#restart bind
+service bind9 restart
+```
+
+- Mengubah konfigurasi `baratayuda.abimanyu.E19.com` dengan menambahkan `A` menuju IP abimanyu dan diberi nama `rjp`. Kemudian tambahkan alias `www.rjp` ke `rjp.baratayuda.abimanyu.E19.com`.
+
+**Sadewa & Nakula**
+
+Cek apakah subdomain sudah berjalan atau tidak menggunakan ping di Client Sadewa/Nakula
+```
+ping rjp.baratayuda.abimanyu.E19.com -c 3
+ping www.rjp.baratayuda.abimanyu.E19.com -c 3
+```
+
+### Screenshot hasil:
+
 ## Soal 9
 **Arjuna merupakan suatu Load Balancer Nginx dengan tiga worker (yang juga menggunakan nginx sebagai webserver) yaitu Prabakusuma, Abimanyu, dan Wisanggeni. Lakukan deployment pada masing-masing worker.**
+
+### Penjelasan :
+
+**Prabakusuma & Abimanyu & Wisanggeni**
+
+Pertama, melakukan `Configurasi` pada masing-masing worker untuk menginstall nginx dan membuat folder `www.arjuna.E19.com` di `/var/www/` dan mengisi file `index.php` di folder tersebut.
+```sh
+ apt-get update
+ apt install nginx php php-fpm -y
+ apt install lynx -y
+
+# Cek Versi php
+    php -v
+
+# buat direktori baru di /var/www, dengan nama arjuna
+mkdir /var/www/arjuna
+ 
+# isi file index.php dengan
+echo '
+    <?php
+        echo "Halo, Kamu akses arjuna.E19.com melalui worker node PRABUKUSUMA"; // Nama worker node bisa diganti sesuai nama masing-masing yaitu PRABAKUSUMA, ABIMANYU, WISANGGENI
+        $date = date("Y-m-d H:i:s");
+        $php_version = phpversion();
+        $username = get_current_user();
+
+        echo "Hello World!<br>";
+        echo "Saat ini berada di: $hostname<br>";
+        echo "Versi PHP yang saya gunakan: $php_version<br>";
+        echo "Tanggal saat ini: $date<br>";
+?>
+' > /var/www/arjuna/index.php
+
+# isi file konfigurasi arjuna dengan
+echo '
+ server {
+
+ 	listen 8001;    # Port 80 diganti 8001 untuk PRABAKUSUMA, 8002 untuk ABIMANYU, 8003 untuk WISANGGENI
+
+ 	root /var/www/arjuna;   # Folder file arjuna
+
+ 	index index.php index.html index.htm;   # File index.php
+ 	server_name arjuna.E19.com;  # Nama server
+
+ 	location / {
+ 			try_files $uri $uri/ /index.php?$query_string;
+ 	}
+
+ 	# pass PHP scripts to FastCGI server
+ 	location ~ \.php$ {
+ 	include snippets/fastcgi-php.conf;
+ 	fastcgi_pass unix:/var/run/php/php7.0-fpm.sock;
+ 	}
+
+ location ~ /\.ht {
+ 			deny all;
+ 	}
+
+ 	error_log /var/log/nginx/arjuna_error.log;
+ 	access_log /var/log/nginx/arjuna_access.log;
+ }
+    ' > /etc/nginx/sites-available/arjuna
+
+# buat symlink ke sites-enabled
+    ln -s /etc/nginx/sites-available/arjuna /etc/nginx/sites-enabled/
+
+# restart nginx
+    service nginx restart
+
+# Cek Konfigurasi
+    nginx -t
+```
+
+- Pertama, Install nginx, php, dan lynx.
+- Kedua, buat direktori baru di `/var/www`, dengan nama `arjuna`.
+- Ketiga, isi file `index.php` dengan perintah diatas.
+- Kemudian, ubah konfigurasi `/etc/nginx/sites-available/arjuna`.
+- Lakukan symlink ke sites-enabled.
+- Terakhir, restart nginx.
+
+**Arjuna**
+
+`bash 9loadbalancing.sh` untuk mengubah konfigurasi Arjuna.
+```sh
+apt-get update
+ apt-get install bind9 nginx -y
+
+echo '
+
+ # Default menggunakan Round Robin
+ upstream myweb  {
+        server 10.46.3.2:8001; #IP Prabukusuma
+        server 10.46.3.3:8002; #IP Abimanyu
+        server 10.46.3.4:8003; #IP Wisanggeni
+ }
+
+server {
+        listen 80;
+        server_name arjuna.E19.com;
+
+        location / {
+        proxy_pass http://myweb;
+        }
+ }
+' > /etc/nginx/sites-available/lb-abimanyu
+
+  ln -s /etc/nginx/sites-available/lb-abimanyu /etc/nginx/sites-enabled
+
+service nginx restart
+```
+- Mengubah konfigurasi `/etc/nginx/sites-available/lb-arjuna`.
+- Lakukan symlink ke sites-enabled.
+- restart nginx.
+
+**Sadewa & Nakula**
+Lakukan Configurasi pada Client Sadewa & Nakula
+```sh   
+echo '
+nameserver 192.168.122.1
+//nameserver 10.46.2.2
+//nameserver 10.46.2.3
+' > /etc/resolv.conf
+
+apt-get update
+apt-get install lynx
+
+echo '
+#nameserver 192.168.122.1
+nameserver 10.46.2.2
+nanmeserver 10.46.2.3
+' > /etc/resolv.conf
+```
+
+- Mengubah nameserver menjadi awal aga bisa install lynx.
+- Ubah lagi nameserver menuju IP DNS Master dan Slave agar bisa membuka domain.
+
+Setelah semua konfigurasi sudah, maka terakhir cek apakah web dapat ditampilkan.
+```
+lynx http://arjuna.E19.com
+```
+
+### Screenshot hasil:
+
 ## Soal 10
 **Kemudian gunakan algoritma `Round Robin` untuk Load Balancer pada `Arjuna`. Gunakan server_name pada soal nomor 1. Untuk melakukan pengecekan akses alamat web tersebut kemudian pastikan worker yang digunakan untuk menangani permintaan akan berganti ganti secara acak. Untuk webserver di masing-masing worker wajib berjalan di port 8001-8003. Contoh**
 **- Prabakusuma:8001**
 **- Abimanyu:8002**
 **- Wisanggeni:8003**
+
+### Penjelasan :
+
+**Arjuna**
+Lakukan `Configurasi` pada Arjuna untuk mengubah konfigurasi menjadi Round Robin.
+```sh
+apt-get update
+ apt-get install bind9 nginx -y
+
+echo '
+
+ # Default menggunakan Round Robin
+ upstream myweb  {
+        server 10.46.3.2:8001; #IP Prabukusuma
+        server 10.46.3.3:8002; #IP Abimanyu
+        server 10.46.3.4:8003; #IP Wisanggeni
+ }
+
+server {
+        listen 80;
+        server_name arjuna.E19.com;
+
+        location / {
+        proxy_pass http://myweb;
+        }
+ }
+' > /etc/nginx/sites-available/lb-abimanyu
+
+  ln -s /etc/nginx/sites-available/lb-abimanyu /etc/nginx/sites-enabled
+
+service nginx restart
+```
+- Mengubah konfigurasi `/etc/nginx/sites-available/lb-arjuna`.
+- Lakukan symlink ke sites-enabled.
+- restart nginx.
+
+**Prabakusuma & Abimanyu & Wisanggeni**
+Lakukan Konfigurasi pada webserver masing-masing worker.
+```sh
+ apt-get update
+ apt install nginx php php-fpm -y
+  apt install lynx -y
+
+# Cek Versi php
+    php -v
+
+# buat direktori baru di /var/www, dengan nama arjuna
+mkdir /var/www/arjuna
+ 
+# isi file index.php dengan
+echo '
+    <?php
+        echo "Halo, Kamu akses arjuna.E19.com melalui worker node ABIMANYU";
+        $date = date("Y-m-d H:i:s");
+        $php_version = phpversion();
+        $username = get_current_user();
+
+        echo "Hello World!<br>";
+        echo "Saat ini berada di: $hostname<br>";
+        echo "Versi PHP yang saya gunakan: $php_version<br>";
+        echo "Tanggal saat ini: $date<br>";
+?>
+' > /var/www/arjuna/index.php
+
+# isi file konfigurasi arjuna dengan
+echo '
+ server {
+
+ 	listen 8002;   # Port 80 diganti 8001 untuk PRABAKUSUMA, 8002 untuk ABIMANYU, 8003 untuk WISANGGENI
+
+ 	root /var/www/arjuna;
+
+ 	index index.php index.html index.htm;
+ 	server_name arjuna.E19.com;
+
+ 	location / {
+ 			try_files $uri $uri/ /index.php?$query_string;
+ 	}
+
+ 	# pass PHP scripts to FastCGI server
+ 	location ~ \.php$ {
+ 	include snippets/fastcgi-php.conf;
+ 	fastcgi_pass unix:/var/run/php/php7.0-fpm.sock;
+ 	}
+
+ location ~ /\.ht {
+ 			deny all;
+ 	}
+
+ 	error_log /var/log/nginx/arjuna_error.log;
+ 	access_log /var/log/nginx/arjuna_access.log;
+ }
+    ' > /etc/nginx/sites-available/arjuna
+
+# buat symlink ke sites-enabled
+    ln -s /etc/nginx/sites-available/arjuna /etc/nginx/sites-enabled/
+
+# restart nginx
+    service nginx restart
+
+# Cek Konfigurasi
+    nginx -t
+```
+
+- Pertama, Install nginx, php, dan lynx.
+- Kedua, buat direktori baru di `/var/www`, dengan nama `arjuna`.
+- Ketiga, isi file `index.php` dengan perintah diatas.
+- Kemudian, ubah konfigurasi `/etc/nginx/sites-available/arjuna`.
+- Lakukan symlink ke sites-enabled.
+- Terakhir, restart nginx.
+
+**Sadewa & Nakula**
+Jika Semua konfigurasi sudah, maka terakhir cek apakah web dapat ditampilkan.
+```sh
+lynx http://arjuna.E19.com
+```
+
+### Screenshot hasil:
+
 ## Soal 11
 **Selain menggunakan Nginx, lakukan konfigurasi Apache Web Server pada worker Abimanyu dengan web server `www.abimanyu.yyy.com`. Pertama dibutuhkan web server dengan DocumentRoot pada /var/www/abimanyu.yyy**
 
