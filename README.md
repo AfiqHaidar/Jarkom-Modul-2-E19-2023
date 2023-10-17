@@ -110,16 +110,337 @@ iface eth0 inet static
 ## Soal 2
 **uatlah website utama pada node arjuna dengan akses ke `arjuna.yyy.com` dengan alias `www.arjuna.yyy.com` dengan yyy merupakan kode kelompok.**
 
+Melakukan `Configurasi` pada DNS Master Yudhistira untuk membuat website utama arjuna.E19.com dan www.arjuna.E19.com
+
+**Yudhistira**
+```sh
+#update
+apt-get update
+#install bind
+apt-get install bind9 -y
+#buat zone
+echo '
+zone "arjuna.E19.com" {
+    type master;
+    file "/etc/bind/arjuna/arjuna.E19.com";
+};
+' > /etc/bind/named.conf.local
+#buat folder arjuna
+mkdir /etc/bind/arjuna
+#copy db.local
+cp /etc/bind/db.local /etc/bind/arjuna/arjuna.E19.com
+#config arjuna.E19.com
+echo '
+;
+; BIND data file for local loopback interface
+;
+$TTL    604800
+@       IN      SOA     arjuna.E19.com. root.arjuna.E19.com. (
+        2022102401         ; Serial
+            604800         ; Refresh
+            86400         ; Retry
+            2419200         ; Expire
+            604800 )       ; Negative Cache TTL
+;
+@       IN      NS      arjuna.E19.com.
+@       IN      A       10.46.3.5       ; IP arjuna
+www     IN      CNAME   arjuna.E19.com.   ; alias
+@       IN      AAAA    ::1
+' > /etc/bind/arjuna/arjuna.E19.com
+#restart bind
+service bind9 restart
+```
+
+- Memasukkan konfigurasi ke `named.conf.local`
+- membuat direktori arjuna
+- copy `db.local` ke directory arjuna dan ganti namanya menjadi `arjuna.E19.com`
+- Terakhir, mengubah data di `arjuna.E19.com` menjadi seperti diatas, kemudian restart bind9.
+
+**Sadewa & Nakula**
+Setelah membuat website utama, kita dapat cek website menggunakan ping di `Client Sadewa` atau `Client Nakula` dan cek alias menggunakan host -t CNAME..
+```
+ping arjuna.E19.com -c 3
+host -t CNAME www.arjuna.E19.com
+ping www.arjuna.E19.com -c 3
+```
+### Screenshot hasil:
+
 ## Soal 3
 **Dengan cara yang sama seperti soal nomor 2, buatlah website utama dengan akses ke `abimanyu.yyy.com` dan alias `www.abimanyu.yyy.com`.**
+
+Melakukan `Confiigurasi` pada DNS Master Yudhistira untuk membuat website utama abimanyu.E19.com dan www.abimanyu.E19.com
+
+**Yudhistira**
+```sh
+#update
+apt-get update
+#install bind
+apt-get install bind9 -y
+#buat zone
+echo '
+zone "abimanyu.E19.com" {
+    type master;
+    file "/etc/bind/abimanyu/abimanyu.E19.com";
+};
+' > /etc/bind/named.conf.local
+#buat folder abimanyu
+mkdir /etc/bind/abimanyu
+#copy db.local
+cp /etc/bind/db.local /etc/bind/abimanyu/abimanyu.E19.com
+#config abimanyu.E19.com
+echo '
+;
+; BIND data file for local loopback interface
+;
+$TTL    604800
+@       IN      SOA     abimanyu.E19.com. root.abimanyu.E19.com. (
+        2022102401         ; Serial
+            604800         ; Refresh
+            86400         ; Retry
+            2419200         ; Expire
+            604800 )       ; Negative Cache TTL
+;
+@       IN      NS      abimanyu.E19.com.
+@       IN      A       10.46.3.2       ; IP abimanyu
+www     IN      CNAME   abimanyu.E19.com.   ; alias
+@       IN      AAAA    ::1
+' > /etc/bind/abimanyu/abimanyu.E19.com
+#restart bind
+service bind9 restart
+```
+
+- Memasukkan konfigurasi ke `named.conf.local`
+- membuat direktori abimanyu
+- copy `db.local` ke directory abimanyu dan ganti namanya menjadi `abimanyu.E19.com`
+- Terakhir, mengubah data di `abimanyu.E19.com` menjadi seperti diatas, kemudian restart bind9.
+
+**Sadewa & Nakula**
+Setelah membuat website utama, kita dapat cek website menggunakan ping di `Client Sadewa` atau `Client Nakula` dan cek alias menggunakan host -t CNAME..
+```
+ping abimanyu.E19.com -c 3
+host -t CNAME www.abimanyu.E19.com
+ping www.abimanyu.E19.com -c 3
+```
+### Screenshot hasil:
+
 ## Soal 4
 **Kemudian, karena terdapat beberapa web yang harus di-deploy, buatlah subdomain `parikesit.abimanyu.yyy.com` yang diatur DNS-nya di Yudhistira dan mengarah ke Abimanyu.**
+
+Melakukan `Configurasi` pada DNS Master Yudhistira untuk membuat subdomain parikesit.abimanyu.E19.com
+
+**Yudhistira**
+```sh
+#config subdomain abimanyu.E19.com
+echo '
+;
+; BIND data file for local loopback interface
+;
+$TTL    604800
+@       IN      SOA     abimanyu.E19.com. root.abimanyu.E19.com. (
+        2022102401         ; Serial
+            604800         ; Refresh
+            86400         ; Retry
+            2419200         ; Expire
+            604800 )       ; Negative Cache TTL
+;
+@       IN      NS      abimanyu.E19.com.
+@       IN      A       10.46.2.2       ; IP Yudhistira
+www     IN      CNAME   abimanyu.E19.com.   ; alias
+parikesit IN    A       10.46.3.3       ; IP Abimanyu
+@       IN      AAAA    ::1
+' > /etc/bind/abimanyu/abimanyu.E19.com
+
+
+#restart bind
+service bind9 restart
+```
+
+- Mengubah data di `abimanyu.E19.com` menjadi seperti diatas, dengan menambahkan subdomain parikesit.abimanyu.E19.com dengan IP Abimanyu. kemudian restart bind9.
+
+**Sadewa & Nakula**
+Setelah membuat website utama, kita dapat cek website menggunakan ping di `Client Sadewa` atau `Client Nakula` dan cek alias menggunakan host -t CNAME..
+```sh
+ping parikesit.abimanyu.E19.com -c 3
+host -t CNAME www.parikesit.abimanyu.E19.com
+ping www.parikesit.abimanyu.E19.com -c 3
+```
+### Screenshot hasil:
+
 ## Soal 5
 **Buat juga reverse domain untuk domain utama. (Abimanyu saja yang direverse)**
+
+Melakukan `Configurasi` pada DNS Master Yudhistira untuk membuat reverse domain untuk domain utama.
+
+**Yudhistira**
+```sh
+#update
+apt-get update
+
+#install bind
+apt-get install bind9 -y
+
+#buat zone
+echo '
+zone "3.46.10.in-addr.arpa" {
+    type master;
+    file "/etc/bind/abimanyu/3.46.10.in-addr.arpa";
+};
+' > /etc/bind/named.conf.local
+
+# Buat folder abimanyu
+mkdir /etc/bind/abimanyu
+# Copy db.local ke folder abimanyu
+cp /etc/bind/db.local /etc/bind/abimanyu/3.46.10.in-addr.arpa
+
+#config 3.46.10.in-addr.arpa
+echo '
+;
+; BIND data file for local loopback interface
+;
+$TTL    604800
+@       IN      SOA     abimanyu.E19.com. root.abimanyu.E19.com. (
+             2022100601              ; Serial
+                 604800              ; Refresh
+                  86400              ; Retry
+                2419200              ; Expire
+                 604800 )            ; Negative Cache TTL
+;
+3.46.10.in-addr.arpa.   IN      NS      abimanyu.E19.com.   // reverse domain name 
+3                       IN      PTR      abimanyu.E19.com.     // membuat pointer 3.46.10.in-addr.arpa
+' > /etc/bind/abimanyu/3.46.10.in-addr.arpa
+
+#restart bind
+service bind9 restart
+```
+
+- Memasukkan konfigurasi ke `named.conf.local`
+- membuat direktori abimanyu
+- copy `db.local` ke directory abimanyu dan ganti namanya menjadi `3.46.10.in-addr.arpa`
+- Terakhir, mengubah data di `3.46.10.in-addr.arpa` menjadi seperti diatas, kemudian restart bind9.
+
+**Sadewa & Nakula**
+Kita dapat cek reverse domain menggunakan host -t PTR di `Client Sadewa` atau `Client Nakula`.
+```
+host -t PTR 10.46.3.3
+```
+### Screenshot hasil:
+
+
 ## Soal 6
 **Agar dapat tetap dihubungi ketika DNS Server Yudhistira bermasalah, buat juga Werkudara sebagai DNS Slave untuk domain utama.**
+
+Melakukan `Configurasi` pada DNS Slave Werkudara untuk membuat DNS Slave untuk domain utama.
+
+**Yudhistira**
+```sh
+echo '
+zone "arjuna.E19.com" {
+    type master;
+    notify yes;
+    also-notify { 10.46.2.3; };        // IP Werkudara
+    allow-transfer { 10.46.2.3; };     // IP Werkudara
+    file "/etc/bind/arjuna/arjuna.E19.com"; //  file master di yudhistira
+};
+
+zone "abimanyu.E19.com" {
+    type master;
+    notify yes; 
+    also-notify { 10.46.2.3; };         // IP Werkudara
+    allow-transfer { 10.46.2.3; };      // IP Werkudara
+    file "/etc/bind/abimanyu/abimanyu.E19.com"; // file master di yudhistira 
+};
+
+zone "3.46.10.in-addr.arpa" {
+    type master;
+    notify yes;
+    also-notify { 10.46.2.3; };           // IP Werkudara
+    allow-transfer { 10.46.2.3; };        // IP Werkudara
+    file "/etc/bind/abimanyu/3.46.10.in-addr.arpa";
+};
+' > /etc/bind/named.conf.local
+
+#restart bind
+service bind9 restart
+```
+
+- Mengubah konfigurasi `named.conf.local`.
+- Menambahkan `notify yes`, `also-notify { IP Werkudara };`, `allow-transfer { Werkudara };` pada zone arjuna dan abimanyu.
+- Restart bind9.
+
+**Werkudara**
+```sh
+# nameserver
+echo '
+nameserver 192.168.122.1 
+nameserver 10.46.2.2    
+' > /etc/resolv.conf
+#update
+apt-get update
+
+#install bind
+apt-get install bind9 -y
+
+#buat zone
+echo '
+zone "arjuna.E19.com" {
+    type slave; //  master jika di yudhistira
+    masters { 10.46.2.2; }; #IP yudhistira  
+    file "/var/lib/bind/arjuna.E19.com";
+};
+
+zone "abimanyu.E19.com" {
+    type slave;
+    masters { 10.46.2.2; }; #IP yudhistira
+    file "/var/lib/bind/abimanyu.E19.com";
+};
+
+zone "baratayuda.abimanyu.E19.com" {
+    type master;    // master jika di yudhistira 
+    file "/etc/bind/baratayuda/baratayuda.abimanyu.E19.com";
+};
+
+zone "3.46.10.in-addr.arpa" {
+    type slave; // master jika di yudhistira
+    masters { 10.46.2.2; }; #IP yudhistira
+    file "/etc/bind/3.46.10.in-addr.arpa";
+};
+' > /etc/bind/named.conf.local
+```
+
+- Mengubah konfigurasi `named.conf.local`.
+- Menambahkan zone arjuna dan abimanyu
+- `type slave` karena Werkudara akan dijadikan DNS Slave dengan master menuju IP Yudhistira.
+
+**Sadewa & Nakula**
+
+Pertama, menambahkan nameserver DNS Slave ke `resolv.conf`. Dapat dilakukan dengan melakukan `Configurasi Name Server`.
+```
+echo '
+//nameserver 192.168.122.1
+nameserver 10.46.2.2
+nameserver 10.46.2.3
+' > /etc/resolv.conf
+```
+- Menambahkan nameserver DNS Slave/IP Werkudara.
+
+**Kita akan cek apakah DNS Slave berhasil**
+
+Pertama akan distop bind9 di `Yudhistira`
+```
+service bind9 stop 
+```
+Kemudian melakukan ping di `Client Sadewa` atau `Client Nakula`.
+```
+ping www.abimanyu.E19.com -c 3
+ping www.arjuna.E19.com -c 3
+```
+Jika berhasil, maka DNS Slave sudah benar.
+
+### Screenshot hasil:
+
 ## Soal 7
 **Seperti yang kita tahu karena banyak sekali informasi yang harus diterima, buatlah subdomain khusus untuk perang yaitu `baratayuda.abimanyu.yyy.com` dengan alias `www.baratayuda.abimanyu.yyy.com` yang didelegasikan dari Yudhistira ke Werkudara dengan IP menuju ke Abimanyu dalam folder Baratayuda.**
+
 ## Soal 8
 **Untuk informasi yang lebih spesifik mengenai Ranjapan Baratayuda, buatlah subdomain melalui Werkudara dengan akses `rjp.baratayuda.abimanyu.yyy.com` dengan alias `www.rjp.baratayuda.abimanyu.yyy.com` yang mengarah ke Abimanyu.**
 ## Soal 9
