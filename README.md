@@ -7,8 +7,109 @@ Laporan Resmi Praktikum Modul 2 Kelompok E19
 
 ## Soal 1
 **Yudhistira akan digunakan sebagai DNS Master, Werkudara sebagai DNS Slave, Arjuna merupakan Load Balancer yang terdiri dari beberapa Web Server yaitu Prabakusuma, Abimanyu, dan Wisanggeni. Buatlah topologi dengan pembagian sebagai berikut. Folder topologi dapat diakses pada drive berikut**
+
+### Penjelasan :
+
+Topologi yang kami dapat adalah `Topologi no 05`. Berikut Topologi yang sudah dibuat :
+
+
+### Konfigurasi
+**- Pandudewanata (Router)**
+```
+auto eth0
+iface eth0 inet dhcp
+
+auto eth1
+iface eth1 inet static
+	address 10.46.1.1
+	netmask 255.255.255.0
+
+auto eth2
+iface eth2 inet static
+	address 10.46.2.1
+	netmask 255.255.255.0
+
+auto eth3
+iface eth3 inet static
+	address 10.46.3.1
+	netmask 255.255.255.0
+```
+
+**- Sadewa (Client)**
+```
+auto eth0
+iface eth0 inet static
+	address 10.46.1.3
+	netmask 255.255.255.0
+	gateway 10.46.1.1
+```
+
+**- Nakula (Client)**
+```
+auto eth0
+iface eth0 inet static
+	address 10.46.1.2
+	netmask 255.255.255.0
+	gateway 10.46.1.1
+```
+
+**- Yudhistira (DNS Master)**
+```
+auto eth0
+iface eth0 inet static
+	address 10.46.2.2
+	netmask 255.255.255.0
+	gateway 10.46.2.1
+```
+
+**- Werkudara (DNS Slave)**
+```
+auto eth0
+iface eth0 inet static
+	address 10.46.2.3
+	netmask 255.255.255.0
+	gateway 10.46.2.1
+```
+
+**- Arjuna (Load Balancer)**
+```
+auto eth0
+iface eth0 inet static
+	address 10.46.3.5
+	netmask 255.255.255.0
+	gateway 10.46.3.1
+```
+**- Prabakusuma (WebServer)**
+```
+auto eth0
+iface eth0 inet static
+	address 10.46.3.2
+	netmask 255.255.255.0
+	gateway 10.46.3.1
+```
+
+**- Abimanyu (WebServer)**
+```
+auto eth0
+iface eth0 inet static
+	address 10.46.3.3
+	netmask 255.255.255.0
+	gateway 10.46.3.1
+```
+
+
+**- Wisanggeni (WebServer)**
+```
+auto eth0
+iface eth0 inet static
+	address 10.46.3.4
+	netmask 255.255.255.0
+	gateway 10.46.3.1
+```
+
 ## Soal 2
 **uatlah website utama pada node arjuna dengan akses ke `arjuna.yyy.com` dengan alias `www.arjuna.yyy.com` dengan yyy merupakan kode kelompok.**
+
 ## Soal 3
 **Dengan cara yang sama seperti soal nomor 2, buatlah website utama dengan akses ke `abimanyu.yyy.com` dan alias `www.abimanyu.yyy.com`.**
 ## Soal 4
