@@ -12,6 +12,7 @@ Laporan Resmi Praktikum Modul 2 Kelompok E19
 
 Topologi yang kami dapat adalah `Topologi no 05`. Berikut Topologi yang sudah dibuat :
 
+![image](https://github.com/AfiqHaidar/Jarkom-Modul-2-E19-2023/assets/100523471/3cd03843-1652-4b1f-9cb4-980fdd76e511)
 
 ### Konfigurasi
 **- Pandudewanata (Router)**
